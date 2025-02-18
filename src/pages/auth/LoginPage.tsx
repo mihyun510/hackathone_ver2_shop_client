@@ -19,8 +19,8 @@ import PasswordResetDialog from "../../components/modals/PasswordResetDialog"; /
 
 const LoginPage = () => {
   const { login } = useAuth();
-  const [us_id, setUsId] = useState("");
-  const [us_pw, setUsPw] = useState("");
+  const [usId, setUsId] = useState("");
+  const [usPw, setUsPw] = useState("");
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // 아이디 저장 체크박스 상태
   const [openModal, setOpenModal] = useState(false); // 모달 열기/닫기 상태
@@ -31,8 +31,10 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const userData = await loginUser(us_id, us_pw);
-      login(userData);
+      const response = await loginUser(usId, usPw);
+      var responseUser = response.data.user;
+      responseUser.push(response.data.token);
+      login(responseUser);
     } catch (err) {
       setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
     }
@@ -63,7 +65,7 @@ const LoginPage = () => {
     if (!e.target.checked) {
       localStorage.removeItem("saveUsId"); // 체크박스를 풀면 로컬 스토리지에서 아이디 삭제
     } else {
-      localStorage.setItem("saveUsId", us_id);
+      localStorage.setItem("saveUsId", usId);
     }
   };
 
@@ -95,7 +97,7 @@ const LoginPage = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={us_id}
+            value={usId}
             onChange={handleIdTextBoxChange}
             required
           />
@@ -105,7 +107,7 @@ const LoginPage = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={us_pw}
+            value={usPw}
             onChange={(e) => setUsPw(e.target.value)}
             required
           />

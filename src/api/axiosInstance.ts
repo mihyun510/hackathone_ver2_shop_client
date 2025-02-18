@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // 기본 API URL 설정
-const API_URL = "http://localhost:8080";
+const API_URL = "http://localhost:8080/apis";
 
 // Axios 인스턴스 생성
 const apiInstance = axios.create({
@@ -28,6 +28,14 @@ apiInstance.interceptors.request.use(
   }
 );
 
+// Auth 서버를 위한 인스턴스
+const authInstance = axios.create({
+  baseURL: "http://localhost:8080/auth", // Auth 기본 URL
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 // 응답 인터셉터 (Response Interceptor)
 apiInstance.interceptors.response.use(
   (response) => response, // 정상 응답 그대로 반환
@@ -44,4 +52,4 @@ apiInstance.interceptors.response.use(
   }
 );
 
-export default apiInstance;
+export { apiInstance, authInstance };

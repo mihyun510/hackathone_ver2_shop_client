@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   TextField,
   Button,
@@ -9,32 +9,39 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 useNavigate
+import { registerUser } from "../../api/authApi";
+import { User } from "../../types/api-type";
 
 const RegisterPage = () => {
-  const [us_nm, setUsNm] = useState(""); // 이름 상태 추가
-  const [us_id, setUsId] = useState("");
-  const [us_email, setUsEmail] = useState("");
-  const [us_pw, setUsPw] = useState("");
+  const [usNm, setUsNm] = useState(""); // 이름 상태 추가
+  const [usId, setUsId] = useState("");
+  const [usEmail, setUsEmail] = useState("");
+  const [usPw, setUsPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
+
+  const formData = useRef<Omit<User, "usRole" | "token">>({
+    usId: "",
+    usNm: "",
+    usPw: "",
+    usEmail: "",
+  });
 
   // 회원가입 처리 함수
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); // 기본 동작 방지 (페이지 새로고침 방지)
 
     // 비밀번호 확인
-    if (us_pw !== confirmPw) {
+    if (usPw !== confirmPw) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
 
     // 회원가입 API 호출 (예시: 실제 API와 연동)
     try {
-      // 예: await registerUser(us_id, us_email, us_pw);
-      console.log("회원가입 성공:", { us_id, us_email, us_pw });
-      // 성공 시 로그인 페이지로 이동
-      navigate("/login");
+      const response = await registerUser(formData.current);
+      if (response.isOk) navigate("/login");
     } catch (err) {
       setError("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
@@ -54,7 +61,7 @@ const RegisterPage = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={us_id}
+            value={usId}
             onChange={(e) => setUsId(e.target.value)}
             required
           />
@@ -63,7 +70,7 @@ const RegisterPage = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={us_nm}
+            value={usNm}
             onChange={(e) => setUsNm(e.target.value)}
             required
           />
@@ -73,7 +80,7 @@ const RegisterPage = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={us_email}
+            value={usEmail}
             onChange={(e) => setUsEmail(e.target.value)}
             required
           />
@@ -83,7 +90,7 @@ const RegisterPage = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={us_pw}
+            value={usPw}
             onChange={(e) => setUsPw(e.target.value)}
             required
           />
