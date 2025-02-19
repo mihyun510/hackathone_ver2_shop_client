@@ -1,6 +1,6 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { loginUser } from "../../api/authApi";
+import { Navigate } from "react-router";
 import {
   Container,
   Card,
@@ -18,27 +18,29 @@ import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 us
 import PasswordResetDialog from "../../components/modals/PasswordResetDialog"; // PasswordResetDialog 컴포넌트 import
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
+  const { login, token } = useAuth();
   const [usId, setUsId] = useState("");
   const [usPw, setUsPw] = useState("");
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // 아이디 저장 체크박스 상태
   const [openModal, setOpenModal] = useState(false); // 모달 열기/닫기 상태
-  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
 
-  const handleLogin = async (e: FormEvent) => {
-    e.preventDefault(); // 기본 동작(페이지 새로고침) 방지
-    setError("");
+  const [isOk, setIsOk] = useState(false); // 모달 열기/닫기 상태
 
-    try {
-      const response = await loginUser(usId, usPw);
-      var responseUser = response.data.user;
-      responseUser.push(response.data.token);
-      login(responseUser);
-    } catch (err) {
-      setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
-    }
-  };
+  const handleLogin = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault(); // 기본 동작(페이지 새로고침) 방지
+      setError("");
+
+      const response = await login(usId, usPw);
+      if (response.isOk) {
+        console.log(response.isOk);
+        setIsOk(response.isOk);
+      } else setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
+    },
+    [usId, usPw, login]
+  );
 
   // 회원가입 페이지로 이동
   const navigateToRegister = () => {
@@ -69,6 +71,14 @@ const LoginPage = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(isOk);
+    if (isOk) {
+      console.log(isOk);
+      navigate("/home");
+    }
+  }, [isOk]);
+
   // 컴포넌트가 처음 렌더링될 때 로컬 스토리지에서 아이디 값을 가져옴
   useEffect(() => {
     const savedUsId = localStorage.getItem("saveUsId"); // 로컬 스토리지에서 아이디 가져오기
@@ -81,6 +91,13 @@ const LoginPage = () => {
   const handleResetPasswordEmail = (email: string) => {
     // 비밀번호 초기화 이메일 발송 로직 추가 (예: 이메일 발송 API 호출)
     setOpenModal(false); // 모달 닫기
+  };
+
+  // 엔터 키로 로그인 처리
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleLogin(e as any); // Enter 키를 눌렀을 때 로그인 처리
+    }
   };
 
   return (
@@ -100,6 +117,7 @@ const LoginPage = () => {
             value={usId}
             onChange={handleIdTextBoxChange}
             required
+            onKeyDown={handleKeyDown} // 엔터 키 이벤트 추가
           />
           <TextField
             label="비밀번호"
@@ -110,6 +128,7 @@ const LoginPage = () => {
             value={usPw}
             onChange={(e) => setUsPw(e.target.value)}
             required
+            onKeyDown={handleKeyDown} // 엔터 키 이벤트 추가
           />
 
           {/* 아이디 저장 체크박스와 비밀번호 초기화 버튼 나란히 배치 */}

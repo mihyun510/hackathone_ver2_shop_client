@@ -28,6 +28,13 @@ const RegisterPage = () => {
     usEmail: "",
   });
 
+  const handleChange = (
+    field: keyof typeof formData.current,
+    value: string
+  ) => {
+    formData.current[field] = value; // formData.current 업데이트
+  };
+
   // 회원가입 처리 함수
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); // 기본 동작 방지 (페이지 새로고침 방지)
@@ -62,7 +69,10 @@ const RegisterPage = () => {
             fullWidth
             margin="normal"
             value={usId}
-            onChange={(e) => setUsId(e.target.value)}
+            onChange={(e) => {
+              setUsId(e.target.value);
+              handleChange("usId", e.target.value);
+            }}
             required
           />
           <TextField
@@ -71,7 +81,10 @@ const RegisterPage = () => {
             fullWidth
             margin="normal"
             value={usNm}
-            onChange={(e) => setUsNm(e.target.value)}
+            onChange={(e) => {
+              setUsNm(e.target.value);
+              handleChange("usNm", e.target.value);
+            }}
             required
           />
 
@@ -81,7 +94,10 @@ const RegisterPage = () => {
             fullWidth
             margin="normal"
             value={usEmail}
-            onChange={(e) => setUsEmail(e.target.value)}
+            onChange={(e) => {
+              setUsEmail(e.target.value);
+              handleChange("usEmail", e.target.value);
+            }}
             required
           />
           <TextField
@@ -91,7 +107,10 @@ const RegisterPage = () => {
             fullWidth
             margin="normal"
             value={usPw}
-            onChange={(e) => setUsPw(e.target.value)}
+            onChange={(e) => {
+              setUsPw(e.target.value);
+              handleChange("usPw", e.target.value);
+            }}
             required
           />
           <TextField
