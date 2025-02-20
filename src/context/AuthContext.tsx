@@ -4,6 +4,7 @@ import {
   useState,
   ReactNode,
   useCallback,
+  useEffect,
 } from "react";
 import { loginUser } from "../api/authApi";
 import { User } from "../types/api-type";
@@ -22,7 +23,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | undefined>(undefined);
-  const [token, setToken] = useState<string | undefined>(undefined);
+  const [token, setToken] = useState<string | undefined>(
+    localStorage.getItem("token") || undefined
+  );
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token); // ✅ 토큰이 변경될 때 localStorage에 저장
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
 
   const login = useCallback(async (usId: string, usPw: string) => {
     const response = await loginUser(usId, usPw);

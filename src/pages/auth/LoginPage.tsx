@@ -26,7 +26,7 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false); // 아이디 저장 체크박스 상태
   const [openModal, setOpenModal] = useState(false); // 모달 열기/닫기 상태
 
-  const [isOk, setIsOk] = useState(false); // 모달 열기/닫기 상태
+  //const [isOk, setIsOk] = useState(false);
 
   const handleLogin = useCallback(
     async (e: FormEvent) => {
@@ -35,8 +35,8 @@ const LoginPage = () => {
 
       const response = await login(usId, usPw);
       if (response.isOk) {
-        console.log(response.isOk);
-        setIsOk(response.isOk);
+        //setIsOk(response.isOk);
+        navigate("/home");
       } else setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
     },
     [usId, usPw, login]
@@ -71,13 +71,11 @@ const LoginPage = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(isOk);
-    if (isOk) {
-      console.log(isOk);
-      navigate("/home");
-    }
-  }, [isOk]);
+  // useEffect(() => {
+  //   if (isOk) {
+  //     navigate("/home");
+  //   }
+  // }, [isOk]);
 
   // 컴포넌트가 처음 렌더링될 때 로컬 스토리지에서 아이디 값을 가져옴
   useEffect(() => {

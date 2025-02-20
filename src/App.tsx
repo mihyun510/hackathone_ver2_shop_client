@@ -11,10 +11,11 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import HomePage from "./pages/main/HomePage";
 
 function RootApp() {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const isLoginForm = ["login", "register"].includes(
     useLocation().pathname.substring(1)
   );
+
   return (
     <Routes>
       {token && !isLoginForm ? (
