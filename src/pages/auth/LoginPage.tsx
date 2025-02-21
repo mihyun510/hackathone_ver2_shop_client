@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { Navigate } from "react-router";
+import { resetPassword } from "../../api/authApi";
 import {
   Container,
   Card,
@@ -19,7 +19,7 @@ import PasswordResetDialog from "../../components/modals/PasswordResetDialog"; /
 
 const LoginPage = () => {
   const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
-  const { login, token } = useAuth();
+  const { login } = useAuth();
   const [usId, setUsId] = useState("");
   const [usPw, setUsPw] = useState("");
   const [error, setError] = useState("");
@@ -71,23 +71,26 @@ const LoginPage = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (isOk) {
-  //     navigate("/home");
-  //   }
-  // }, [isOk]);
-
   // 컴포넌트가 처음 렌더링될 때 로컬 스토리지에서 아이디 값을 가져옴
   useEffect(() => {
     const savedUsId = localStorage.getItem("saveUsId"); // 로컬 스토리지에서 아이디 가져오기
     if (savedUsId) {
+      setUsId(savedUsId);
       setRememberMe(true); // 체크박스 체크
     }
   }, []);
 
   // 비밀번호 초기화 로직
-  const handleResetPasswordEmail = (email: string) => {
+  const handleResetPasswordId = async (usId: string) => {
     // 비밀번호 초기화 이메일 발송 로직 추가 (예: 이메일 발송 API 호출)
+
+    //이메일 존재한다면 true
+    //이메일로 초기 비밀번호 셋팅
+    const res = await resetPassword(usId);
+    if (res.isOk) {
+      setError(res.message == undefined ? "success" : res.message);
+    } else setError(res.message == undefined ? "error" : res.message);
+
     setOpenModal(false); // 모달 닫기
   };
 
@@ -182,7 +185,7 @@ const LoginPage = () => {
       <PasswordResetDialog
         open={openModal}
         onClose={() => setOpenModal(false)}
-        onResetPassword={handleResetPasswordEmail}
+        onResetPassword={handleResetPasswordId}
       />
     </Container>
   );
