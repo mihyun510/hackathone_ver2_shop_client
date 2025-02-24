@@ -34,7 +34,7 @@ const LoginPage = () => {
       setError("");
 
       const response = await login(usId, usPw);
-      if (response.isOk) {
+      if (response.ok) {
         //setIsOk(response.isOk);
         navigate("/home");
       } else setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
@@ -87,7 +87,7 @@ const LoginPage = () => {
     //이메일 존재한다면 true
     //이메일로 초기 비밀번호 셋팅
     const res = await resetPassword(usId);
-    if (res.isOk) {
+    if (res.ok) {
       setError(res.message == undefined ? "success" : res.message);
     } else setError(res.message == undefined ? "error" : res.message);
 

@@ -15,17 +15,21 @@ interface AuthContextType {
   login: (
     id: string,
     password: string
-  ) => Promise<{ isOk: boolean; data?: User; message?: string }>;
+  ) => Promise<{ ok: boolean; data?: User; message?: string }>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | undefined>(undefined);
-  const [token, setToken] = useState<string | undefined>(
-    localStorage.getItem("token") || undefined
-  );
+  const [user, setUser] = useState<User | undefined>(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : undefined; // 로컬스토리지에서 user가 있으면 파싱하여 setUser
+  });
+  const [token, setToken] = useState<string | undefined>(() => {
+    const storedToken = localStorage.getItem("token");
+    return storedToken ? storedToken : undefined; // 로컬스토리지에서 user가 있으면 파싱하여 setUser
+  });
 
   useEffect(() => {
     if (token) {
@@ -33,11 +37,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else {
       localStorage.removeItem("token");
     }
-  }, [token]);
+
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user)); // ✅ 토큰이 변경될 때 localStorage에 저장
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [token, user]);
 
   const login = useCallback(async (usId: string, usPw: string) => {
     const response = await loginUser(usId, usPw);
-    if (response.isOk) {
+    if (response.ok) {
       setUser(response.data.user);
       setToken(response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user)); // localStorage에 user 정보 저장

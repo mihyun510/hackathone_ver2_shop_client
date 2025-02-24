@@ -8,7 +8,7 @@ export interface User {
 }
 
 export type ResponseData = {
-  isOk: boolean;
+  ok: boolean;
   data?: any;
   message?: string;
 };

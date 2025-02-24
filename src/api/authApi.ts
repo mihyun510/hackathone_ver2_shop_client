@@ -15,21 +15,21 @@ export async function loginUser(
     if (response.data.token && response.data.user) {
       // 로그인 성공 시, 사용자 정보와 토큰을 반환
       return {
-        isOk: true,
+        ok: true,
         data: response.data,
         message: response.data.message,
       };
     } else {
       // 인증 실패 시
       return {
-        isOk: false,
+        ok: false,
         message: response.data.message,
       };
     }
   } catch (error) {
     console.error("SignIn Error:", error);
     return {
-      isOk: false,
+      ok: false,
       message: "Authentication failed",
     };
   }
@@ -43,12 +43,12 @@ export async function registerUser(
     // Send request
     const response = await authInstance.post("/save/user", user);
     return {
-      isOk: true,
+      ok: true,
       message: response.data,
     };
   } catch {
     return {
-      isOk: false,
+      ok: false,
       message: "Failed to create account",
     };
   }
@@ -79,12 +79,12 @@ export async function resetPassword(usId: string): Promise<ResponseData> {
       usId: usId,
     });
     return {
-      isOk: true,
+      ok: true,
       message: response.data,
     };
   } catch {
     return {
-      isOk: false,
+      ok: false,
       message: "Failed to reset password",
     };
   }

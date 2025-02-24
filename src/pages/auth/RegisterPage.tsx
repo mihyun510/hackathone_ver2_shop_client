@@ -48,7 +48,7 @@ const RegisterPage = () => {
     // 회원가입 API 호출 (예시: 실제 API와 연동)
     try {
       const response = await registerUser(formData.current);
-      if (response.isOk) navigate("/login");
+      if (response.ok) navigate("/login");
     } catch (err) {
       setError("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
